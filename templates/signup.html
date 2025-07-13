@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Academix | Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- 🔷 Header -->
+    <header class="bg-purple-900 text-white text-center py-4 shadow-md">
+      <h1 class="text-3xl font-bold">Academix</h1>
+    </header>
+
+    <!-- 📝 Form Section -->
+    <main class="flex-grow flex items-center justify-center">
+      <form
+        class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md space-y-6"
+        method="post"
+      >
+        {% csrf_token %}
+        <h2 class="text-2xl font-bold text-center text-purple-700">
+          Student Registration
+        </h2>
+
+        <!-- Name Field -->
+        <div>
+          <label for="name" class="block text-gray-600 font-medium mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <!-- Email Field -->
+        <div>
+          <label for="email" class="block text-gray-600 font-medium mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label for="password" class="block text-gray-600 font-medium mb-1">
+            Password
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div>
+          <label for="confirm" class="block text-gray-600 font-medium mb-1">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            id="confirm"
+            name="confirm"
+            required
+            class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        {% if error %}
+        <div
+          class="bg-red-100 border border-red-500 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong class="font-bold">Error: </strong>
+          <span class="block sm:inline">{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Submit Button -->
+        <div class="text-center mt-10">
+          <button
+            type="submit"
+            class="bg-green-600 text-white font-semibold px-6 py-2 rounded-xl hover:bg-blue-700 transition scale-125"
+          >
+            Register
+          </button>
+        </div>
+        <div class="mt-4 text-center text-1xl text-gray-600">
+          Already have an account?
+          <a href="{% url 'login' %}" class="text-blue-600 hover:underline"
+            >Login</a
+          >
+        </div>
+      </form>
+    </main>
+
+    <!-- 🔻 Footer -->
+    <footer class="bg-purple-900 text-white text-center py-3 mt-8">
+      <p class="text-sm">© 2025 Academix. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
