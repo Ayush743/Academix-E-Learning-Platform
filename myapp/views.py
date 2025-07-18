@@ -28,9 +28,10 @@ def signup(request):
 
 def login_view(request):
     if(request.method=='POST'):
-        username=request.POST['email']
-        password=request.POST['password']
+        username=request.POST.get('email')
+        password=request.POST.get('password')
         not_hashed = User.objects.get(email=username)
+
         if not not_hashed.password.startswith('pbkdf2'):
                 not_hashed.set_password(password)
                 not_hashed.save()
@@ -43,6 +44,8 @@ def login_view(request):
                 return redirect('teacher_main')
             elif(user.roles=='registrar'):
                 return redirect('registrar_main')
+            elif(user.roles=='admin'):
+                return redirect('admin_dashboard')
             else:
                 return render(request,'index.html',{'error':'Invalid Role'})
         else:
@@ -56,6 +59,11 @@ def student_main(request):
         raise PermissionDenied 
     return render(request,'student.html')
 @login_required
+def admin_dashboard(request):
+    if request.user.roles != 'admin':
+        raise PermissionDenied 
+    return render(request,'admin_dashboard.html')
+@login_required
 def teacher_main(request):
     if request.user.roles != 'teacher':
         raise PermissionDenied 
@@ -65,3 +73,15 @@ def registrar_main(request):
     if request.user.roles != 'registrar':
         raise PermissionDenied 
     return render(request,'registrar.html')
+def admin_announcement(request):
+    return render(request,'admin_announcement.html')
+
+def admin_live(request):
+    return render(request,'admin_join_live.html')
+def student_management(request):
+    return render(request,'student_management.html')
+def course_management(request):
+    return render(request,'course_management.html')
+def teacher_management(request):
+    return render(request,'teacher_management.html')
+
