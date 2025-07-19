@@ -1,8 +1,10 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .models import User,Teacher
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+import csv
+from django.db.models import Q
 # Create your views here.
 def signup(request):
     if(request.method=='POST'):
@@ -28,14 +30,14 @@ def signup(request):
 
 def login_view(request):
     if(request.method=='POST'):
-        username=request.POST.get('email')
+        email=request.POST.get('email')
         password=request.POST.get('password')
-        not_hashed = User.objects.get(email=username)
+        # not_hashed = User.objects.get(email=username)
 
-        if not not_hashed.password.startswith('pbkdf2'):
-                not_hashed.set_password(password)
-                not_hashed.save()
-        user=authenticate(request,username=username,password=password)
+        # if not not_hashed.password.startswith('pbkdf2'):
+        #         not_hashed.set_password(password)
+        #         not_hashed.save()
+        user=authenticate(request,username=email,password=password)
         if(user is not None):
             login(request,user)
             if(user.roles=='student'):
@@ -149,7 +151,67 @@ def add_teacher(request):
 
 def view_teacher(request):
     department=request.GET.get('department')
+    query=request.GET.get('search')
     teacher=Teacher.objects.all()
     if(department):
         teacher=teacher.filter(department=department)
-    return render(request,'view_teacher.html',{'teachers':teacher})
+        return render(request,'view_teacher.html',{'teachers':teacher})
+    if(query):
+        teacher=teacher.filter(
+            Q(user__name__icontains=query)|
+            Q(user__email__icontains=query)|
+            Q(subject__icontains=query)|
+            Q(salary_per_month__icontains=query)
+        )
+        return render(request,'view_teacher.html',{'teachers':teacher})
+    return render(request,'view_teacher.html',{'error':'something went wrong'})
+        
+    
+def upload_csv(request):
+    if(request.method=='POST'):
+        csv_file=request.FILES.get('csv_file')
+        if( not csv_file.name.endswith('.csv')):
+               return render(request,'upload_csv.html',{'Error':'Pls upload in csv format'})
+        decoded_file=csv_file.read().decode('utf-8').splitlines()
+        file=csv.DictReader(decoded_file)
+        for row in file:
+                name = row['name']    
+                email = row['email']     
+                password = row['password']
+                department = row['department']
+                subject = row['subject']
+                section = row['section']
+                salary = row['salary']
+                user=User.objects.create_user(
+                    name=name,
+                    email=email,
+                    username=email,
+                    password=password,
+                    roles='teacher'
+
+                )
+                Teacher.objects.create(
+                    user=user,
+                    department=department,
+                    salary_per_month=salary,
+                    subject=subject,
+                    section=section
+                )
+        return render(request, 'admin_add_teacher.html', {'message': 'CSV data uploaded successfully!'})
+            
+
+    return render(request,'upload_csv.html')
+
+def delete_teacher(request):
+    if(request.method=='POST'):
+        id=request.POST.get('query')
+        if(User.objects.filter(email=id).exists()):
+            user=get_object_or_404(User,email=id)
+            user.delete()
+            return render(request,'delete_teacher.html',{'Message':'Teacher deleted successfully.'})
+        else:
+            return render(request,'delete_teacher.html',{'Error':'Teacher not found.'})
+    return render(request,'delete_teacher.html')
+   
+    
+
