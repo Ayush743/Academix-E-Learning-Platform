@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import User
+from .models import User,Teacher
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -73,15 +73,83 @@ def registrar_main(request):
     if request.user.roles != 'registrar':
         raise PermissionDenied 
     return render(request,'registrar.html')
+@login_required
 def admin_announcement(request):
+    if request.user.roles != 'admin':
+        raise PermissionDenied 
     return render(request,'admin_announcement.html')
-
+@login_required
 def admin_live(request):
+    if request.user.roles != 'admin':
+        raise PermissionDenied 
     return render(request,'admin_join_live.html')
+@login_required
 def student_management(request):
+    if request.user.roles != 'admin':
+        raise PermissionDenied 
     return render(request,'student_management.html')
+@login_required
 def course_management(request):
+    if request.user.roles != 'admin':
+        raise PermissionDenied 
     return render(request,'course_management.html')
+@login_required
 def teacher_management(request):
+    if request.user.roles != 'admin':
+        raise PermissionDenied 
+    if request.method == "POST":
+        operation = request.POST.get("operation")
+        if operation == "add":
+            return redirect("add_teacher")
+        elif operation == "view":
+            return redirect("view_teacher")
+        elif operation == "update":
+            return redirect("update_teacher")
+        elif operation == "delete":
+            return redirect("delete_teacher")
+        else:
+             return render(request,'teacher_management.html', {'error': 'Please select a valid operation'})
+    
     return render(request,'teacher_management.html')
+@login_required
+def add_teacher(request):
+   
+    if(request.method=='POST'):
+        name=request.POST.get('name')
+        email=request.POST.get('email')
+        passsword=request.POST.get('password')
+        salary=request.POST.get('salary')
+        section=request.POST.get('section')
+        department=request.POST.get('department')
+        subject=request.POST.get('subject')
+        phone_num=request.POST.get('phone')
+        if(User.objects.filter(email=email).exists()):
+            return render(request,'admin_add_teacher.html',{'error': 'User already exists'})
+        user=User.objects.create_user(
+            email=email,
+            username=email,
+            password=passsword,
+            name=name,
+            roles='teacher'
+        )
+        teacher=Teacher.objects.create(
+            user=user,
+            salary_per_month=salary,
+            section=section,
+            phone_num=phone_num,
+            department=department,
+            subject=subject
 
+        )
+        if teacher :
+              return render(request,'admin_add_teacher.html',{'message':'Teacher added successfully.'})
+        else:
+              return render(request,'admin_add_teacher.html',{'error':'Teacher creation failed.'})
+    return render(request,'admin_add_teacher.html')
+
+def view_teacher(request):
+    department=request.GET.get('department')
+    teacher=Teacher.objects.all()
+    if(department):
+        teacher=teacher.filter(department=department)
+    return render(request,'view_teacher.html',{'teachers':teacher})
