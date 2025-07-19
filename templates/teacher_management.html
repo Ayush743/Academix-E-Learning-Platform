@@ -1,0 +1,81 @@
+{% extends 'admin_base.html' %} {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Teacher Management - Select Operation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gradient-to-br from-purple-100 via-white to-purple-200 min-h-screen flex items-center justify-center"
+  >
+    <div class="flex items-center justify-center w-full h-screen">
+      <div
+        class="bg-white/80 backdrop-blur-md p-10 rounded-2xl shadow-2xl w-full max-w-md"
+      >
+        <h1
+          class="text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-500"
+        >
+          Teacher Management
+        </h1>
+
+        {% if error %}
+        <p class="text-red-600 text-center mb-4">{{ error }}</p>
+        {% endif %}
+
+        <form method="post" class="space-y-6">
+          {% csrf_token %}
+
+          <label
+            for="operation"
+            class="block text-lg font-semibold text-gray-700"
+          >
+            Select a CRUD Operation
+          </label>
+
+          <div class="relative">
+            <select
+              name="operation"
+              id="operation"
+              class="w-full px-5 py-3 border border-purple-300 bg-gradient-to-r from-white to-purple-50 text-purple-800 font-semibold rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition ease-in-out duration-300 appearance-none"
+            >
+              <option value="" disabled selected>-- Choose Operation --</option>
+              <option value="add">➕ Add Teacher</option>
+              <option value="view">📄 View/Search Teacher</option>
+              <option value="update">📝 Update Teacher</option>
+              <option value="delete">❌ Delete Teacher</option>
+            </select>
+
+            <div
+              class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-purple-400"
+            >
+              <svg
+                class="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-transform duration-300 transform hover:scale-105"
+          >
+            Proceed ➜
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+
+{% endblock %}

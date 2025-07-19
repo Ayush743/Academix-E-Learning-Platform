@@ -1,0 +1,214 @@
+{% extends 'admin_base.html' %} {% block js %}
+<script>
+  const subjects = {
+    "Computer Science": [
+      "Data Structures",
+      "Algorithms",
+      "Operating Systems",
+      "DBMS",
+      "Computer Networks",
+      "AI",
+      "Machine Learning",
+      "Software Engineering",
+      "Cyber Security",
+      "Web Technologies",
+      "Compiler Design",
+    ],
+    Electrical: [
+      "Circuit Theory",
+      "Power Systems",
+      "Electrical Machines",
+      "Control Systems",
+      "Analog Electronics",
+      "DSP",
+      "Power Electronics",
+      "Measurements",
+      "High Voltage Engg",
+      "Renewable Energy",
+    ],
+    Mechanical: [
+      "Thermodynamics",
+      "Fluid Mechanics",
+      "Heat Transfer",
+      "Machine Design",
+      "Mechanics",
+      "Manufacturing",
+      "RAC",
+      "Kinematics",
+      "SOM",
+      "CAD/CAM",
+    ],
+    Electronics: [
+      "Analog Circuits",
+      "Digital Electronics",
+      "Microprocessors",
+      "Communication Systems",
+      "EMFT",
+      "VLSI Design",
+      "Wireless Comm",
+      "DSP",
+      "Radar Systems",
+      "Antennas",
+    ],
+    "B.Pharmacy": [
+      "Pharmacology",
+      "Pharma Chemistry",
+      "Pharmacognosy",
+      "Pharmaceutics",
+      "Pharma Analysis",
+      "Clinical Pharmacy",
+      "Biochemistry",
+      "Anatomy & Physiology",
+      "Microbiology",
+      "Medicinal Chemistry",
+    ],
+    Biotechnology: [
+      "Genetics",
+      "Molecular Biology",
+      "Biochemistry",
+      "Bioprocess Engg",
+      "Immunology",
+      "Genetic Engg",
+      "Microbial Tech",
+      "Enzyme Tech",
+      "Cell Biology",
+      "Env Biotechnology",
+    ],
+  };
+
+  function updateSubjects() {
+    const dept = document.getElementById("department").value;
+    const subjectSelect = document.getElementById("subject");
+    subjectSelect.innerHTML = "";
+    if (subjects[dept]) {
+      subjects[dept].forEach((subj) => {
+        const option = document.createElement("option");
+        option.value = subj;
+        option.textContent = subj;
+        subjectSelect.appendChild(option);
+      });
+    }
+  }
+</script>
+{% endblock %} {% block content %}
+<div
+  class="flex items-center justify-center w-full min-h-screen bg-gradient-to-tr from-purple-100 via-purple-200 to-purple-300 py-12"
+>
+  <div class="mb-16">
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      class="bg-white shadow-xl rounded-xl p-8 w-full max-w-lg space-y-4"
+    >
+      {% csrf_token %}
+      <h2 class="text-center text-2xl font-bold text-purple-700">
+        Add Teacher
+      </h2>
+
+      <input
+        type="text"
+        name="name"
+        placeholder="Full Name"
+        required
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+      />
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        required
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        required
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+      />
+      <input
+        type="text"
+        name="phone"
+        placeholder="Phone Number"
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+      />
+
+      <select
+        name="department"
+        id="department"
+        onchange="updateSubjects()"
+        required
+        class="w-full px-4 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+      >
+        <option value="">-- Select Department --</option>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Electrical">Electrical</option>
+        <option value="Mechanical">Mechanical</option>
+        <option value="Electronics">Electronics</option>
+        <option value="B.Pharmacy">B.Pharmacy</option>
+        <option value="Biotechnology">Biotechnology</option>
+      </select>
+
+      <select
+        name="subject"
+        id="subject"
+        required
+        class="w-full px-4 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+      >
+        <option value="">-- Select Subject --</option>
+      </select>
+
+      <input
+        type="text"
+        name="section"
+        placeholder="Section"
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+      />
+
+      <select
+        name="salary"
+        required
+        class="w-full px-4 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+      >
+        <option value="">-- Select Salary --</option>
+        <option value="30000">₹30,000/month</option>
+        <option value="40000">₹40,000/month</option>
+        <option value="50000">₹50,000/month</option>
+      </select>
+
+      {% if message %}
+      <div
+        class="bg-green-100 border border-green-500 text-green-700 px-4 py-3 rounded relative"
+      >
+        <strong class="font-bold">Message: </strong
+        ><span class="block sm:inline">{{ message }}</span>
+      </div>
+      {% endif %} {% if error %}
+      <div
+        class="bg-red-100 border border-red-500 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
+        <strong class="font-bold">Error: </strong
+        ><span class="block sm:inline">{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <button
+        type="submit"
+        class="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded hover:bg-purple-700 transition"
+      >
+        Add Teacher
+      </button>
+    </form>
+    <div class="mt-4 flex justify-center">
+      <a href="{% url 'upload_csv' %}">
+        <button
+          class="bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:from-green-600 hover:to-green-800 transition duration-300"
+        >
+          Add CSV Data
+        </button>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
