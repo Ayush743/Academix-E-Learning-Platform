@@ -214,4 +214,33 @@ def delete_teacher(request):
     return render(request,'delete_teacher.html')
    
     
+def update_teacher(request):
+    if(request.method=='POST'):
+            if 'search' in request.POST:
+                email=request.POST.get('username')
+                if(User.objects.filter(email=email).exists()):
+                    user=User.objects.get(email=email)
+                    teacher=Teacher.objects.get(user=user)
+                    return render(request,'update_teacher.html',{'user':user,'teacher':teacher})
+            if('update' in request.POST):
+                email=request.POST.get('email')
+                user=User.objects.filter(email=email).first()
+                if not user:
+                     return render(request, 'update_teacher.html', {'error': 'User not found'})
+                teacher=Teacher.objects.filter(user=user).first()
+                user.name=request.POST.get('name')
+                password=request.POST.get('password')
+                user.set_password(password)
+                user.save()
+                teacher.department=request.POST.get('department')
+                teacher.section=request.POST.get('section')
 
+                teacher.salary_per_month=request.POST.get('salary')
+                teacher.save()
+                return redirect('display',username=user.email)#,user_id=user.id)
+    return render(request,'update_teacher.html',)
+def display_updated_record(request,username):
+    user=User.objects.get(username=username)
+    teacher=Teacher.objects.get(user=user)
+    return render(request,'display_updated_record.html',{'user':user,'teacher':teacher})
+''
