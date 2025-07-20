@@ -55,3 +55,15 @@ class Student(models.Model):
         return f"{self.user.name}|| {self.section} || {self.branch}"
 
     
+class Announcement(models.Model):
+    title=models.CharField(max_length=200)
+    desc=models.TextField()
+    print(title,desc)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by=models.ForeignKey(User,on_delete=models.CASCADE)
+    branch=models.CharField(max_length=30,blank=True,null=True)
+    subject=models.CharField(max_length=30,blank=True,null=True)
+    section=models.CharField(max_length=2,blank=True,null=True)
+    target_user=models.ForeignKey(User,on_delete=models.SET_NULL,blank=True,null=True,related_name='target_user')
+    def __str__(self):
+        return f"{self.title}||{self.created_by}"

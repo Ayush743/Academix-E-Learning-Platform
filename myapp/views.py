@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import User,Teacher,Student
+from .models import User,Teacher,Student,Announcement
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -85,7 +85,54 @@ def registrar_main(request):
 def admin_announcement(request):
     if request.user.roles != 'admin':
         raise PermissionDenied 
+    if(request.method=='POST'):
+        created_by=request.user
+        email_by=request.user.email
+        branch=request.POST['branch']
+        subject=request.POST['subject']
+        section=request.POST['section']
+        title=request.POST.get('title')
+        desc=request.POST.get('desc')
+        target_user=request.POST['target_user']
+        if target_user:
+            target_user = User.objects.filter(
+                email=target_user
+            ).first()
+        else:
+            target_user = None
+      
+        target_group=request.POST.get('target_group')
+        announcement=Announcement.objects.create(
+            title=title,
+            desc=desc,
+            created_by=created_by,
+            branch=branch,
+            subject=subject,
+            section=section,
+            target_user=target_user
+
+        )
+        announcement.save()
+        an=Announcement.objects.all()
+        return render(request,'admin_announcement.html',{'announcements':an})
     return render(request,'admin_announcement.html')
+        # user=User.objects.all()
+        # teacher=Teacher.objects.all()
+        # student=Student.objects.all()
+        # if(target_group==""):
+        #         if(branch and section):
+                    # user=user.filter(
+                    #     Q(branch__icontains=branch)&
+                    #     Q(department__icontains=branch)&
+                    #     Q(section__icontains=section)
+                    # )
+                    # return render(request,'admin_announcement.html',{'users':user})
+
+
+
+             
+
+
 @login_required
 def admin_live(request):
     if request.user.roles != 'admin':
@@ -379,6 +426,25 @@ def student_assignment(request):
     return render(request,'student_assignment.html')
 @login_required
 def student_announcement(request):
+    usr = request.user
+    user=Student.objects.get(user=usr)
+    if(usr.roles=='student'):
+            user_announcements = Announcement.objects.filter(
+                Q(target_user=usr)| 
+                Q(branch=user.branch, section=user.section) |  
+                Q(branch="")
+            )
+            return render(request, 'student_announcement.html', {'announcements': user_announcements})
+    elif usr.roles=='teacher':
+            user=Teacher.objects.get(user=usr)
+            user_announcements = Announcement.objects.filter(
+                Q(target_user=usr)| 
+                Q(department=user.department, section=user.section) |  
+                Q(department=""))
+
+
+
+            return render(request, 'student_announcement.html', {'announcements': user_announcements})
     return render(request,'student_announcement.html')
 @login_required
 def student_fees(request):
