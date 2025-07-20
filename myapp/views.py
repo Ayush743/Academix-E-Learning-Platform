@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import User,Teacher
+from .models import User,Teacher,Student
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -41,7 +41,10 @@ def login_view(request):
         if(user is not None):
             login(request,user)
             if(user.roles=='student'):
-                return redirect('student_main')
+                if( not user.fees_submitted):
+                     return redirect('student_register')
+                else:
+                     return redirect('student_profile')
             elif(user.roles=='teacher'):
                 return redirect('teacher_main')
             elif(user.roles=='registrar'):
@@ -56,15 +59,18 @@ def login_view(request):
             
     return render(request,'index.html')
 @login_required
-def student_main(request):
+def student_profile(request):
     if request.user.roles != 'student':
         raise PermissionDenied 
-    return render(request,'student.html')
+    user=request.user
+    student=Student.objects.get(user=user)
+    pending_fees=110000-int(student.fees_amount)
+    return render(request,'student_profile.html',{'student':student,'pending_fees':pending_fees})
 @login_required
 def admin_dashboard(request):
     if request.user.roles != 'admin':
         raise PermissionDenied 
-    return render(request,'admin_dashboard.html')
+    return render(request,'admin_dashboard.html',{'user':request.user})
 @login_required
 def teacher_main(request):
     if request.user.roles != 'teacher':
@@ -89,12 +95,22 @@ def admin_live(request):
 def student_management(request):
     if request.user.roles != 'admin':
         raise PermissionDenied 
+    if request.method == "POST":
+        operation = request.POST.get("operation")
+        if operation == "add":
+            return redirect("add_student")
+        elif operation == "view":
+            return redirect("view_student")
+        elif operation == "update":
+            return redirect("update_student")
+        elif operation == "delete":
+            return redirect("delete_student")
+        else:
+             return render(request,'student_management.html', {'error': 'Please select a valid operation'})
+    
     return render(request,'student_management.html')
-@login_required
-def course_management(request):
-    if request.user.roles != 'admin':
-        raise PermissionDenied 
-    return render(request,'course_management.html')
+
+
 @login_required
 def teacher_management(request):
     if request.user.roles != 'admin':
@@ -149,6 +165,42 @@ def add_teacher(request):
               return render(request,'admin_add_teacher.html',{'error':'Teacher creation failed.'})
     return render(request,'admin_add_teacher.html')
 
+def add_student(request):
+    if(request.method=='POST'):
+        name=request.POST.get('name')
+        email=request.POST.get('email')
+        passsword=request.POST.get('password')
+        section=request.POST.get('section')
+        amount=request.POST.get('amount')
+        phone=request.POST.get('phone')
+        branch=request.POST.get('branch')
+        attendance=request.POST.get('year')
+       
+        if(User.objects.filter(email=email).exists()):
+            return render(request,'admin_student_insert.html',{'error': 'User already exists'})
+        user=User.objects.create_user(
+            email=email,
+            username=email,
+            password=passsword,
+            name=name,
+            roles='student',
+            fees_submitted=True
+        )
+        student=Student.objects.create(
+            user=user,
+            section=section,
+            branch=branch,
+            attendance=attendance,
+            fees_amount=amount,
+            phone_num=phone
+
+        )
+        if student :
+              return render(request,'admin_student_insert.html',{'message':'Student added successfully.'})
+        else:
+              return render(request,'admin_student_insert.html',{'error':'Student creation failed.'})
+    return render(request,'admin_student_insert.html')
+
 def view_teacher(request):
     department=request.GET.get('department')
     query=request.GET.get('search')
@@ -165,6 +217,30 @@ def view_teacher(request):
         )
         return render(request,'view_teacher.html',{'teachers':teacher})
     return render(request,'view_teacher.html',{'error':'something went wrong'})
+        
+def view_student(request):
+    branch=request.GET.get('branch')
+    section=request.GET.get('section')
+    query=request.GET.get('search')
+    student=Student.objects.all()
+    if(branch and section):
+        student=student.filter(
+                Q(branch__icontains=branch) &
+                Q(section__icontains=section)
+        )
+        return render(request,'student_view.html',{'students':student})
+    if(branch):
+        student=student.filter(branch=branch)
+        return render(request,'student_view.html',{'students':student})
+    print(section,branch)
+
+    if(query):
+        student=student.filter(
+            Q(user__name__icontains=query)|
+            Q(user__email__icontains=query)
+        )
+        return render(request,'student_view.html',{'students':student})
+    return render(request,'student_view.html',{'error':'something went wrong'})
         
     
 def upload_csv(request):
@@ -201,6 +277,48 @@ def upload_csv(request):
             
 
     return render(request,'upload_csv.html')
+def student_csv(request):
+    if(request.method=='POST'):
+        csv_file=request.FILES.get('csv_file')
+        if( not csv_file.name.endswith('.csv')):
+               return render(request,'admin_student_csv.html',{'Error':'Pls upload in csv format'})
+        decoded_file=csv_file.read().decode('utf-8').splitlines()
+        file=csv.DictReader(decoded_file)
+        for row in file:
+                name = row['name']    
+                email = row['email']     
+                password = row['password']
+                branch = row['department']
+                year = row['year']
+                amount = row['amount']
+                section = row['section']
+                phone=row['phone']
+                marks=row['marks_percentage']
+                attendance=row['attendance_percentage']
+    
+                user=User.objects.create_user(
+                    name=name,
+                    email=email,
+                    username=email,
+                    password=password,
+                    roles='student',
+                    fees_submitted=True
+
+                )
+                Student.objects.create(
+                    user=user,
+                    branch=branch,
+                    phone_num=phone,
+                    marks=marks,
+                    attendance=attendance,
+                    year=year,
+                    fees_amount=amount,
+                    section=section
+                )
+        return render(request, 'admin_add_teacher.html', {'message': 'CSV data uploaded successfully!'})
+            
+
+    return render(request,'admin_student_csv.html')
 
 def delete_teacher(request):
     if(request.method=='POST'):
@@ -243,4 +361,72 @@ def display_updated_record(request,username):
     user=User.objects.get(username=username)
     teacher=Teacher.objects.get(user=user)
     return render(request,'display_updated_record.html',{'user':user,'teacher':teacher})
-''
+
+
+@login_required
+def student_register(request):
+    return render(request,'student_register.html')
+
+
+@login_required
+def student_live(request):
+    return render(request,'student_live.html')
+@login_required
+def student_notes(request):
+    return render(request,'student_notes.html')
+@login_required
+def student_assignment(request):
+    return render(request,'student_assignment.html')
+@login_required
+def student_announcement(request):
+    return render(request,'student_announcement.html')
+@login_required
+def student_fees(request):
+    user=request.user
+    if(request.method=='POST'):
+        branch=request.POST.get('branch')
+        amount=request.POST.get('amount')
+        phone=request.POST.get('phone')
+        print(phone)
+        receipt=request.FILES['receipt']
+        if(receipt):
+            student=Student.objects.create(
+                user=user,
+                branch=branch,
+                fees_amount=amount,
+                receipt=receipt,
+                phone_num=phone,
+                registered=True
+
+            )
+            student.save()
+            return redirect('success')
+        else:
+            return render(request,'student_fees_submit.html',{'error':"pls upload the fees receipt file"})
+    return render(request,'student_fees_submit.html',{'user':user})
+
+
+def success_page(request):
+    user=request.user
+    return render(request,'success.html',{'user':user})
+
+def fees_management(request):
+    marker=""
+    message=""
+    students=Student.objects.filter(registered=True)
+
+    if(request.method=='POST'):
+        email=request.POST.get('email')
+        year=request.POST.get('year')
+        section=request.POST.get('section')
+        user = User.objects.get(email=email)
+        student=Student.objects.get(user=user)
+        student.section=section
+        student.year=year
+        student.save()
+        user.fees_submitted=True
+        user.save()
+        message='student registered successfully'
+        if(user.fees_submitted==True):
+            marker='Registered'
+    return render(request,'fees_management.html',{'students':students,'message':message,"marker":marker})
