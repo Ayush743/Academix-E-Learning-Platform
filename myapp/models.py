@@ -43,7 +43,7 @@ class Teacher(models.Model):
 class Student(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     branch=models.CharField(max_length=30,blank=True,null=True)
-    section=models.CharField(max_length=2,blank=True,null=True)
+    section=models.CharField(max_length=2,default="")
     attendance=models.FloatField(max_length=10,default=0.0)
     marks=models.FloatField(max_length=10,default=0.0)
     year=models.IntegerField(max_length=10,blank=True,default=True)

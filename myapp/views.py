@@ -86,47 +86,39 @@ def admin_announcement(request):
     if request.user.roles != 'admin':
         raise PermissionDenied 
     if(request.method=='POST'):
-        created_by=request.user
-        email_by=request.user.email
-        branch=request.POST['branch']
-        subject=request.POST['subject']
-        section=request.POST['section']
-        title=request.POST.get('title')
-        desc=request.POST.get('desc')
-        target_user=request.POST['target_user']
-        if target_user:
-            target_user = User.objects.filter(
-                email=target_user
-            ).first()
-        else:
-            target_user = None
-      
-        target_group=request.POST.get('target_group')
-        announcement=Announcement.objects.create(
-            title=title,
-            desc=desc,
-            created_by=created_by,
-            branch=branch,
-            subject=subject,
-            section=section,
-            target_user=target_user
+            target_user=request.POST['target_user']
+            created_by=request.user
+            email_by=request.user.email
+            branch=request.POST['branch']
+            subject=request.POST['subject']
+            section=request.POST['section']
+            title=request.POST.get('title')
+            desc=request.POST.get('desc')
+            if target_user:
+                target_user = User.objects.filter(
+                    email=target_user
+                ).first()
+            else:
+                target_user = None
+        
+            target_group=request.POST.get('target_group')
+            announcement=Announcement.objects.create(
+                title=title,
+                desc=desc,
+                created_by=created_by,
+                branch=branch,
+                subject=subject,
+                section=section,
+                target_user=target_user
 
-        )
-        announcement.save()
-        an=Announcement.objects.all()
-        return render(request,'admin_announcement.html',{'announcements':an})
+            )
+            announcement.save()
+            an=Announcement.objects.all()
+            return render(request,'admin_announcement.html',{'announcements':an})
+ 
+            
     return render(request,'admin_announcement.html')
-        # user=User.objects.all()
-        # teacher=Teacher.objects.all()
-        # student=Student.objects.all()
-        # if(target_group==""):
-        #         if(branch and section):
-                    # user=user.filter(
-                    #     Q(branch__icontains=branch)&
-                    #     Q(department__icontains=branch)&
-                    #     Q(section__icontains=section)
-                    # )
-                    # return render(request,'admin_announcement.html',{'users':user})
+      
 
 
 
@@ -427,13 +419,18 @@ def student_assignment(request):
 @login_required
 def student_announcement(request):
     usr = request.user
-    user=Student.objects.get(user=usr)
-    if(usr.roles=='student'):
+    if usr.roles == 'student':
+            try:
+                user = Student.objects.get(user=usr)
+            except Student.DoesNotExist:
+                    return render(request, 'student_announcement.html', {'announcements': []})
+        
+                
             user_announcements = Announcement.objects.filter(
-                Q(target_user=usr)| 
-                Q(branch=user.branch, section=user.section) |  
-                Q(branch="")
-            )
+                        Q(target_user=usr)| 
+                        Q(branch=user.branch, section=user.section) |  
+                        Q(branch="")
+                    )
             return render(request, 'student_announcement.html', {'announcements': user_announcements})
     elif usr.roles=='teacher':
             user=Teacher.objects.get(user=usr)
@@ -444,7 +441,7 @@ def student_announcement(request):
 
 
 
-            return render(request, 'student_announcement.html', {'announcements': user_announcements})
+            return render(request, 'teacher_announcement.html', {'announcements': user_announcements})
     return render(request,'student_announcement.html')
 @login_required
 def student_fees(request):
@@ -486,13 +483,16 @@ def fees_management(request):
         year=request.POST.get('year')
         section=request.POST.get('section')
         user = User.objects.get(email=email)
+        if(not section):
+             return render(request,'fees_management.html',{'students':students,'error':f'{user.name}'})
         student=Student.objects.get(user=user)
         student.section=section
         student.year=year
         student.save()
         user.fees_submitted=True
         user.save()
-        message='student registered successfully'
+        message=user.name
         if(user.fees_submitted==True):
             marker='Registered'
+        
     return render(request,'fees_management.html',{'students':students,'message':message,"marker":marker})
