@@ -1,12 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
-    {% block js %} {% endblock %}
-    <title>Admin Panel | Academix</title>
-
+    {% block js %}{% endblock %}
+    <title>Teacher Panel | Academix</title>
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
@@ -19,16 +19,21 @@
       <div
         class="max-w-full mx-auto px-6 py-4 flex items-center justify-between"
       >
-        <h1 class="text-3xl font-bold text-indigo-700">Academix Admin Panel</h1>
+        <h1 class="text-3xl font-bold text-purple-700">
+          Academix Teacher Panel
+        </h1>
         <div class="flex items-center gap-4">
           {% if user %}
-          <span class="text-gray-800 font-medium">Welcome, {{user.name}}</span>
+          <span class="text-gray-800 font-medium"
+            >Welcome, {{ user.name }}</span
+          >
           {% endif %}
           <a
             href="/logout"
             class="text-red-500 hover:text-red-700 font-semibold"
-            >Logout</a
           >
+            Logout
+          </a>
         </div>
       </div>
     </header>
@@ -36,11 +41,10 @@
     <div class="flex">
       <!-- SIDEBAR -->
       <aside
-        class="w-72 h-screen bg-gradient-to-b from-indigo-700 to-purple-800 text-white shadow-lg sticky top-0"
+        class="w-72 h-screen bg-gradient-to-b from-purple-700 to-indigo-800 text-white shadow-lg sticky top-0"
       >
         <div class="p-6">
           <div class="p-6 flex flex-col items-center">
-            {% load static %}
             <img
               src="{% static 'myapp/logo.png' %}"
               alt="Academix Logo"
@@ -50,44 +54,56 @@
 
           <nav class="flex flex-col space-y-6 text-lg font-semibold">
             <a
-              href="{% url 'admin_dashboard' %}"
+              href="{% url 'teacher_profile' %}"
               class="flex items-center hover:text-yellow-200 transition"
             >
-              <span class="material-icons mr-3 text-xl">dashboard</span>
-              Dashboard
+              <span class="material-icons mr-3 text-xl">person_outline</span>
+              Profile
             </a>
             <a
-              href="{% url 'teacher_management' %}"
+              href="{% url 'teacher_live' %}"
               class="flex items-center hover:text-yellow-200 transition"
             >
-              <span class="material-icons mr-3 text-xl">person</span> Teacher
-              Management
+              <span class="material-icons mr-3 text-xl">videocam</span>
+              Live Class
             </a>
-
             <a
-              href="{% url 'student_management' %}"
+              href="{% url 'teacher_attendance' %}"
               class="flex items-center hover:text-yellow-200 transition"
             >
-              <span class="material-icons mr-3 text-xl">school</span> Student
-              Management
+              <span class="material-icons mr-3 text-xl"
+                >check_circle_outline</span
+              >
+              Attendance
             </a>
-
             <a
-              href="{% url 'announcement' %}"
+              href="{% url 'teacher_marks' %}"
+              class="flex items-center hover:text-yellow-200 transition"
+            >
+              <span class="material-icons mr-3 text-xl">grading</span>
+              Marks
+            </a>
+            <a
+              href="{% url 'teacher_notes' %}"
+              class="flex items-center hover:text-yellow-200 transition"
+            >
+              <span class="material-icons mr-3 text-xl">description</span>
+              Notes
+            </a>
+            <a
+              href="{% url 'teacher_assignment' %}"
+              class="flex items-center hover:text-yellow-200 transition"
+            >
+              <span class="material-icons mr-3 text-xl">assignment</span>
+              Assignments
+            </a>
+            <a
+              href="{% url 'teacher_announcement' %}"
               class="flex items-center hover:text-yellow-200 transition"
             >
               <span class="material-icons mr-3 text-xl">campaign</span>
               Announcements
             </a>
-            <a
-              href="{% url 'admin_live' %}"
-              class="flex items-center hover:text-yellow-200 transition"
-            >
-              <span class="material-icons mr-3 text-xl">live_tv</span> Join Live
-              Class
-            </a>
-
-            <!-- Add more links below -->
           </nav>
         </div>
       </aside>

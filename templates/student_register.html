@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Academix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body
+    class="bg-gradient-to-br from-purple-700 via-orange-400 to-green-300 min-h-screen text-gray-900"
+  >
+    <!-- Navbar -->
+    <nav
+      class="bg-gradient-to-r from-indigo-700 to-purple-800 text-white shadow-lg sticky top-0 z-50"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center"
+      >
+        <h1 class="text-2xl font-bold">Academix</h1>
+        <a
+          href="{% url 'student_fees' %}"
+          class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg shadow-md font-semibold"
+        >
+          Register Now
+        </a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="text-center py-16 px-6 bg-white/30">
+      <h2 class="text-4xl font-extrabold text-purple-800 mb-4">
+        Shape Your Future with <span class="text-orange-500">Academix</span>
+      </h2>
+      <p class="text-xl max-w-3xl mx-auto text-gray-800">
+        Discover excellence in education, top-tier placements, skilled faculty,
+        and state-of-the-art infrastructure. Join the revolution in e-learning!
+      </p>
+    </section>
+
+    <!-- Stats Section -->
+    <section
+      class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-10 px-4"
+    >
+      <div
+        class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl shadow-lg p-6 text-center"
+      >
+        <h3 class="text-5xl font-bold">1200+</h3>
+        <p class="mt-2 text-lg font-medium">Students Registered</p>
+      </div>
+      <div
+        class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-xl shadow-lg p-6 text-center"
+      >
+        <h3 class="text-5xl font-bold">75+</h3>
+        <p class="mt-2 text-lg font-medium">Expert Teachers</p>
+      </div>
+      <div
+        class="bg-gradient-to-r from-green-400 to-teal-500 text-white rounded-xl shadow-lg p-6 text-center"
+      >
+        <h3 class="text-5xl font-bold">98%</h3>
+        <p class="mt-2 text-lg font-medium">Placement Rate</p>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="mt-16 px-6 max-w-7xl mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-8 text-indigo-800">
+        Why Choose Academix?
+      </h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h3 class="text-xl font-semibold text-purple-700">
+            Interactive Live Classes
+          </h3>
+          <p class="mt-2 text-gray-700">
+            Engage in real-time with teachers and peers through our seamless
+            live class platform.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h3 class="text-xl font-semibold text-orange-600">
+            Assignment Tracking
+          </h3>
+          <p class="mt-2 text-gray-700">
+            Get reminders and keep track of your pending assignments with ease.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h3 class="text-xl font-semibold text-green-600">
+            Digital Notes Access
+          </h3>
+          <p class="mt-2 text-gray-700">
+            Access class notes anytime, anywhere with our smart cloud storage.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h3 class="text-xl font-semibold text-yellow-600">
+            Smart Dashboards
+          </h3>
+          <p class="mt-2 text-gray-700">
+            Customized dashboards for students and teachers to manage tasks
+            effectively.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h3 class="text-xl font-semibold text-indigo-600">
+            Advanced Analytics
+          </h3>
+          <p class="mt-2 text-gray-700">
+            Performance insights and predictive analytics for personalized
+            learning.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h3 class="text-xl font-semibold text-pink-600">
+            One-on-One Mentoring
+          </h3>
+          <p class="mt-2 text-gray-700">
+            Personal mentoring sessions to guide students for academic and
+            career goals.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer
+      class="bg-gradient-to-r from-indigo-700 to-purple-800 text-white mt-20 px-6 py-12"
+    >
+      <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10">
+        <!-- Contact Info -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">Connect with Us</h3>
+          <div class="flex space-x-6 mb-6">
+            <a href="#" class="hover:text-green-300"
+              ><i class="fab fa-whatsapp fa-lg"></i
+            ></a>
+            <a href="#" class="hover:text-pink-400"
+              ><i class="fab fa-instagram fa-lg"></i
+            ></a>
+            <a href="#" class="hover:text-blue-400"
+              ><i class="fab fa-linkedin fa-lg"></i
+            ></a>
+            <a href="#" class="hover:text-blue-500"
+              ><i class="fab fa-twitter fa-lg"></i
+            ></a>
+          </div>
+          <p>Email: support@academix.com</p>
+          <p>Phone: +91 98765 43210</p>
+        </div>
+
+        <!-- Contact Form -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+          <form action="#" method="POST" class="space-y-4">
+            <input
+              type="text"
+              placeholder="Your Name"
+              class="w-full p-2 rounded-md"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Your Email"
+              class="w-full p-2 rounded-md"
+              required
+            />
+            <textarea
+              rows="4"
+              placeholder="Your Message"
+              class="w-full p-2 rounded-md"
+              required
+            ></textarea>
+            <button
+              type="submit"
+              class="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded-xl font-semibold"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+      <p class="text-center mt-10 text-sm text-gray-300">
+        &copy; 2025 Academix. All rights reserved.
+      </p>
+    </footer>
+  </body>
+</html>

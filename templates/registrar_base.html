@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar Panel | Academix</title>
+
+    <!-- Tailwind CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Google Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-gray-100 text-gray-900">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside
+        class="w-72 bg-gradient-to-b from-purple-800 to-indigo-800 text-white shadow-lg"
+      >
+        <div class="p-6">
+          <div class="flex flex-col items-center mb-6">
+            <img
+              src="{% static 'myapp/logo.png' %}"
+              alt="Academix Logo"
+              class="w-24 h-24 rounded-full shadow"
+            />
+            <h2 class="mt-4 text-xl font-bold">Registrar Panel</h2>
+          </div>
+
+          <nav class="flex flex-col space-y-6 text-lg font-medium">
+            <a
+              href="{% url 'registrar_main' %}"
+              class="flex items-center hover:text-yellow-300"
+            >
+              <i class="material-icons mr-3">dashboard</i> Dashboard
+            </a>
+            <a
+              href="{% url 'fees_management' %}"
+              class="flex items-center hover:text-yellow-300"
+            >
+              <i class="material-icons mr-3">paid</i> Fees Management
+            </a>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main
+        class="flex-1 p-8 overflow-y-auto bg-gradient-to-tr from-purple-100 via-purple-200 to-purple-300"
+      >
+        {% block content %}
+        <!-- Page-specific content goes here -->
+        {% endblock %}
+      </main>
+    </div>
+  </body>
+</html>

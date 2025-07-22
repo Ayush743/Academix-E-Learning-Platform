@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     {% block js %} {% endblock %}
-    <title>Admin Panel | Academix</title>
+    <title>Student Panel | Academix</title>
 
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -19,7 +19,9 @@
       <div
         class="max-w-full mx-auto px-6 py-4 flex items-center justify-between"
       >
-        <h1 class="text-3xl font-bold text-indigo-700">Academix Admin Panel</h1>
+        <h1 class="text-3xl font-bold text-indigo-700">
+          Academix Student Panel
+        </h1>
         <div class="flex items-center gap-4">
           {% if user %}
           <span class="text-gray-800 font-medium">Welcome, {{user.name}}</span>
@@ -50,44 +52,44 @@
 
           <nav class="flex flex-col space-y-6 text-lg font-semibold">
             <a
-              href="{% url 'admin_dashboard' %}"
+              href="{% url 'student_profile' %}"
               class="flex items-center hover:text-yellow-200 transition"
             >
-              <span class="material-icons mr-3 text-xl">dashboard</span>
-              Dashboard
-            </a>
-            <a
-              href="{% url 'teacher_management' %}"
-              class="flex items-center hover:text-yellow-200 transition"
-            >
-              <span class="material-icons mr-3 text-xl">person</span> Teacher
-              Management
+              <span class="material-icons mr-3 text-xl">person</span>
+              Profile
             </a>
 
             <a
-              href="{% url 'student_management' %}"
+              href="{% url 'student_live' %}"
               class="flex items-center hover:text-yellow-200 transition"
             >
-              <span class="material-icons mr-3 text-xl">school</span> Student
-              Management
+              <span class="material-icons mr-3 text-xl">live_tv</span>
+              Live Class
             </a>
 
             <a
-              href="{% url 'announcement' %}"
+              href="{% url 'student_assignment' %}"
+              class="flex items-center hover:text-yellow-200 transition"
+            >
+              <span class="material-icons mr-3 text-xl">assignment</span>
+              Assignments
+            </a>
+
+            <a
+              href="{% url 'student_notes' %}"
+              class="flex items-center hover:text-yellow-200 transition"
+            >
+              <span class="material-icons mr-3 text-xl">note</span>
+              Notes
+            </a>
+
+            <a
+              href="{% url 'student_announcement' %}"
               class="flex items-center hover:text-yellow-200 transition"
             >
               <span class="material-icons mr-3 text-xl">campaign</span>
               Announcements
             </a>
-            <a
-              href="{% url 'admin_live' %}"
-              class="flex items-center hover:text-yellow-200 transition"
-            >
-              <span class="material-icons mr-3 text-xl">live_tv</span> Join Live
-              Class
-            </a>
-
-            <!-- Add more links below -->
           </nav>
         </div>
       </aside>

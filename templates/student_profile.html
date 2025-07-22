@@ -1,0 +1,210 @@
+{% extends 'student_base.html' %} {% block content %}
+
+<div
+  style="
+    min-height: 100vh;
+    padding: 50px 20px;
+    background: linear-gradient(to right, #f3e8ff, #f9f5ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  "
+>
+  <div
+    style="
+      width: 100%;
+      max-width: 800px;
+      background-color: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(128, 0, 128, 0.15);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    "
+  >
+    <h1
+      style="
+        font-size: 32px;
+        text-align: center;
+        font-weight: bold;
+        color: #6b21a8;
+        margin-bottom: 30px;
+      "
+    >
+      🎓 Student Profile
+    </h1>
+
+    <!-- Profile Fields -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px">
+      <!-- Name -->
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Name:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.user.name }}
+        </p>
+      </div>
+
+      <!-- Email -->
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Email:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.user.email }}
+        </p>
+      </div>
+
+      <!-- Year -->
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Year:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.year }}
+        </p>
+      </div>
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Phone Number:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.phone_num }}
+        </p>
+      </div>
+
+      <!-- Branch -->
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Branch:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.branch }}
+        </p>
+      </div>
+
+      <!-- Section -->
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Section:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.section }}
+        </p>
+      </div>
+
+      <!-- Attendance -->
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Attendance:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.attendance }} %
+        </p>
+      </div>
+
+      <!-- Percentage -->
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Overall Percentage:
+        </p>
+        <p style="margin-top: 5px; font-size: 24px; color: #4b0082">
+          {{ student.marks }}%
+        </p>
+      </div>
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Pending Fees:
+        </p>
+        <strong>
+          <p style="margin-top: 5px; font-size: 24px; color: #bf041a">
+            ₹{{ pending_fees }}
+          </p>
+        </strong>
+      </div>
+      <div
+        style="
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(128, 0, 128, 0.1);
+        "
+      >
+        <p style="margin: 0; font-size: 25px; font-weight: 600; color: #7c3aed">
+          Paid Fees:
+        </p>
+        <strong
+          ><p style="margin-top: 5px; font-size: 24px; color: #16d82c">
+            ₹{{ student.fees_amount }}
+          </p></strong
+        >
+        <
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
