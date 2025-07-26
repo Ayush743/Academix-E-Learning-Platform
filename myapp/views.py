@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import User,Teacher,Student,Announcement
+from .models import User,Teacher,Student,Announcement,Assignment,Notes,Student_submission
 from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 import csv
+
 from django.db.models import Q
 # Create your views here.
 def signup(request):
@@ -32,11 +33,6 @@ def login_view(request):
     if(request.method=='POST'):
         email=request.POST.get('email')
         password=request.POST.get('password')
-        # not_hashed = User.objects.get(email=username)
-
-        # if not not_hashed.password.startswith('pbkdf2'):
-        #         not_hashed.set_password(password)
-        #         not_hashed.save()
         user=authenticate(request,username=email,password=password)
         if(user is not None):
             login(request,user)
@@ -46,7 +42,7 @@ def login_view(request):
                 else:
                      return redirect('student_profile')
             elif(user.roles=='teacher'):
-                return redirect('teacher_main')
+                return redirect('teacher_profile')
             elif(user.roles=='registrar'):
                 return redirect('registrar_main')
             elif(user.roles=='admin'):
@@ -64,18 +60,26 @@ def student_profile(request):
         raise PermissionDenied 
     user=request.user
     student=Student.objects.get(user=user)
+    if(request.method=='POST'):
+         img=request.FILES.get('image')
+         if img:
+                student.profile=img
+                student.save()
+   
     pending_fees=110000-int(student.fees_amount)
     return render(request,'student_profile.html',{'student':student,'pending_fees':pending_fees})
 @login_required
 def admin_dashboard(request):
     if request.user.roles != 'admin':
         raise PermissionDenied 
-    return render(request,'admin_dashboard.html',{'user':request.user})
-@login_required
-def teacher_main(request):
-    if request.user.roles != 'teacher':
-        raise PermissionDenied 
-    return render(request,'teacher.html')
+    user=request.user
+    if(request.method=='POST'):
+        user.profile=request.FILES['image']
+        user.save()
+    return render(request,'admin_dashboard.html',{'user':user})
+
+
+
 @login_required
 def registrar_main(request):
     if request.user.roles != 'registrar':
@@ -85,11 +89,13 @@ def registrar_main(request):
 def admin_announcement(request):
     if request.user.roles != 'admin':
         raise PermissionDenied 
+    an=Announcement.objects.all()
     if(request.method=='POST'):
             target_user=request.POST['target_user']
             created_by=request.user
             email_by=request.user.email
             branch=request.POST['branch']
+            roles=request.POST['roles']
             subject=request.POST['subject']
             section=request.POST['section']
             title=request.POST.get('title')
@@ -105,6 +111,7 @@ def admin_announcement(request):
             announcement=Announcement.objects.create(
                 title=title,
                 desc=desc,
+                roles=roles,
                 created_by=created_by,
                 branch=branch,
                 subject=subject,
@@ -113,11 +120,12 @@ def admin_announcement(request):
 
             )
             announcement.save()
-            an=Announcement.objects.all()
-            return render(request,'admin_announcement.html',{'announcements':an})
+            
+            return render(request,'admin_announcement.html')
+    
  
             
-    return render(request,'admin_announcement.html')
+    return render(request,'admin_announcement.html',{'announcements':an})
       
 
 
@@ -412,37 +420,63 @@ def student_live(request):
     return render(request,'student_live.html')
 @login_required
 def student_notes(request):
-    return render(request,'student_notes.html')
+    user=request.user
+    student=Student.objects.get(user=user)
+    section=student.section
+    branch=student.branch
+    notes=Notes.objects.filter(
+            Q(teacher__department=branch,teacher__section=section)
+    )
+    return render(request,'student_notes.html',{'notes':notes})
 @login_required
 def student_assignment(request):
-    return render(request,'student_assignment.html')
+    user=request.user
+    student=Student.objects.get(user=user)
+
+    assignment=Assignment.objects.filter(
+        Q(teacher__department=student.branch,teacher__section=student.section)
+    )
+   
+    if request.method == 'POST':
+        ass_id=request.POST['id']
+        return redirect('student_assignment_submission',a=ass_id)
+        
+
+    return render(request,'student_assignment.html',{'assignment':assignment})
+def sas(request,a):
+    student=Student.objects.get(user=request.user)
+    assign=Assignment.objects.get(id=a)
+    subject=assign.teacher.subject
+
+    if(request.method=='POST'):
+        file=request.FILES['file']
+        submission=Student_submission.objects.create(
+            assgn=assign,
+            file=file,
+            subject=subject,
+            student=student
+        )
+        submission.save()
+        return redirect('student_assignment')
+    return render(request,'s_assgn_sub.html',{'assignment':assign,'student':student})
 @login_required
 def student_announcement(request):
-    usr = request.user
-    if usr.roles == 'student':
-            try:
-                user = Student.objects.get(user=usr)
-            except Student.DoesNotExist:
-                    return render(request, 'student_announcement.html', {'announcements': []})
-        
-                
-            user_announcements = Announcement.objects.filter(
-                        Q(target_user=usr)| 
-                        Q(branch=user.branch, section=user.section) |  
-                        Q(branch="")
-                    )
-            return render(request, 'student_announcement.html', {'announcements': user_announcements})
-    elif usr.roles=='teacher':
-            user=Teacher.objects.get(user=usr)
-            user_announcements = Announcement.objects.filter(
-                Q(target_user=usr)| 
-                Q(department=user.department, section=user.section) |  
-                Q(department=""))
+    user = request.user
+    roles=user.roles    
+    student = Student.objects.get(user=user)
+    direct_announcements = Announcement.objects.filter(target_user=user)
+    announcements = Announcement.objects.filter(
+                       
+                        Q(roles=roles,branch=student.branch, section=student.section) |  
+                        Q(roles="",branch="",section="")|
+                        Q(roles='student',branch="",section="")|
+                        Q(roles='',branch="",section="",target_user=user)|
+                        Q(roles='student',branch=student.branch,section=student.section)
+                    ).exclude(target_user__isnull=False)
+    user_announcements=direct_announcements|announcements
+    
+    return render(request, 'student_announcement.html', {'announcements': user_announcements})
 
-
-
-            return render(request, 'teacher_announcement.html', {'announcements': user_announcements})
-    return render(request,'student_announcement.html')
 @login_required
 def student_fees(request):
     user=request.user
@@ -476,6 +510,7 @@ def success_page(request):
 def fees_management(request):
     marker=""
     message=""
+    file_url=""
     students=Student.objects.filter(registered=True)
 
     if(request.method=='POST'):
@@ -494,5 +529,124 @@ def fees_management(request):
         message=user.name
         if(user.fees_submitted==True):
             marker='Registered'
+     
         
     return render(request,'fees_management.html',{'students':students,'message':message,"marker":marker})
+@login_required
+def teacher_profile(request):
+    if request.user.roles != 'teacher':
+        raise PermissionDenied 
+    user=request.user
+    teacher=Teacher.objects.get(user=user)
+    if(request.method=='POST'):
+        img=request.FILES['image']
+        teacher.profile=img
+        teacher.save()
+    return render(request,'teacher_profile.html',{'teacher':teacher})
+
+
+def teacher_attendance(request):
+     return render(request,'teacher_attendance.html')
+
+def teacher_marks(request):
+     return render(request,'teacher_marks.html')
+def teacher_notes(request):
+    user=request.user
+    teacher=Teacher.objects.get(user=user)
+    subject=teacher.subject
+    if(request.method=='POST'):
+        file=request.FILES['files']
+        msg=request.POST['msg']
+        title=request.POST['title']
+        notes=Notes.objects.create(
+               teacher=teacher,
+               message=msg,
+               title=title,
+               file=file
+          )
+        notes.save()
+        return render(request,'teacher_notes.html')
+    notes=Notes.objects.filter(
+        Q(teacher__subject=subject,teacher__department=teacher.department,teacher__section=teacher.section)
+    )
+    return render(request,'teacher_notes.html',{'notes':notes,'teacher':teacher})
+     
+def teacher_assignment(request):
+        user=request.user
+        teacher=Teacher.objects.get(user=user)
+        if(request.method=='POST'):
+            title=request.POST['title']
+            desc=request.POST['desc']
+            file=request.FILES['file']
+            deadline=request.POST['deadline']
+            asgn=Assignment(
+                 teacher=teacher,
+                 title=title,
+                 desc=desc,
+                 file=file,
+                 deadline=deadline,
+
+            )
+            asgn.save()
+            return render(request,'teacher_assignment.html',{'teacher':teacher})
+        assignment=Assignment.objects.all()
+        assignment=assignment.filter(teacher=teacher)
+        return render(request,'teacher_assignment.html',{'teacher':teacher,'assignments':assignment,})
+
+def teacher_announcement(request):
+    user = request.user
+
+    teacher = Teacher.objects.get(user=user)
+    if(request.method=='POST'):
+        target_user=request.POST['target_user']
+        desc=request.POST['desc']
+        title=request.POST['title']
+        teacher_announcement=Announcement.objects.create(
+            title=title,
+            desc=desc,
+            roles='student',
+            branch=teacher.department,
+            section=teacher.section,
+            created_by=user
+
+        )
+        teacher_announcement.save()
+        return render(request, 'teacher_announcement.html', {'message': 'announcement send successfully'})
+    direct_announcements = Announcement.objects.filter(target_user=user)
+    announcements = Announcement.objects.filter(
+        Q(roles='teacher',branch=teacher.department, section=teacher.section) |  
+         Q(roles="",branch="",section="")|
+         Q(roles='teacher',branch="",section="")
+    ).exclude(target_user__isnull=False)
+    user_announcements=direct_announcements|announcements
+
+
+    return render(request, 'teacher_announcement.html', {'announcements': user_announcements,'teacher':teacher})
+def student_submission(request):
+    teacher=Teacher.objects.get(user=request.user)
+    subject=teacher.subject
+    if(request.method=='POST' and 'search' in request.POST):
+        search=request.POST['search']
+        student=Student.objects.get(
+            Q(user__email__icontains=search,branch=teacher.department,section=teacher.section)
+
+        )
+        submissions=Student_submission.objects.filter(
+            Q(student__user__email=student.user.email,assgn__teacher=teacher)
+        )
+
+    else:
+        submissions=Student_submission.objects.filter(
+        Q(assgn__teacher=teacher)
+    )
+    return render(request,'teacher_student_submission.html',{'submissions':submissions})
+
+def teacher_lobby(request):
+    if(request.method=='POST'):
+        channel=request.POST['channel']
+        return redirect('live_class',channel=channel)
+    return render(request,'room_lobby.html')
+def live_class(request,channel):
+    c=channel
+    teacher=Teacher.objects.get(user=request.user)
+    return render(request,'teacher_room_live.html',{'channel':c,'teacher':teacher})
